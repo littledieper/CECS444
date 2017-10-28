@@ -2,20 +2,19 @@ package parser;
 
 import lexer.Token;
 import lexer.Tokenizer;
-import parser.pst.PSTNode;
+import parser.pst.Node;
+import parser.pst.ASTConverter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Stack;
 
 public class Parser {
 
-    private static Stack<String> inputStack;
+    private static Stack<Node> inputStack;
     private static ArrayList<Token> tokens;
-    private static PSTNode root;
+    private static Node root;
 
     public static void main(String args[]) {
-
         ParseTable table = init();
         if (table == null) {
             System.out.println("The tokenizer really failed...");
@@ -23,19 +22,16 @@ public class Parser {
         }
 
         while(!inputStack.empty()) {
-            String stackTop = inputStack.peek();
+            String stackTop = inputStack.peek().getKeyword();
             String inputFront = tokens.get(0).getGrammar().getKeyword();
             System.out.println("TOP = " + stackTop + "   FRONT = " + inputFront);
-            System.out.println(Arrays.toString(inputStack.toArray()));
 
-            if (m1(stackTop, inputFront)) {
-                inputStack.pop();
-                tokens.remove(0);
+            if (stackTop.equals(inputFront) || stackTop.equals("$")) {
+                m1();
             } else if (m2(stackTop)) {
                 error("M2");
             } else {
                 Rule rule = table.get(stackTop, inputFront);
-                System.out.println("Got rule " + rule.getLhs() + " = " + rule.getRhs());
                 // M3 : empty cell == ERROR
                 if (m3(rule)) {
                     error("M3");
@@ -44,9 +40,17 @@ public class Parser {
                 } // end else
             } // end if/elseif/else
         } // end while
+
+        // Convert PST to AST and print out the AST.
+        Node astRoot = ASTConverter.convert(root);
+        printTree(astRoot, 0);
     } // end main
 
 
+    /**
+     * Initializes the LL Parse table to read from.
+     * @return ParseTable object containing the LL Parse table.
+     */
     private static ParseTable init() {
         Tokenizer tokenizer = new Tokenizer("program.txt");
 
@@ -57,21 +61,22 @@ public class Parser {
             return null;
 
         // SETUP : start the parser
-        inputStack = new Stack<>();
-        inputStack.push("$");
-        inputStack.push("Pgm");
+        inputStack = new Stack<Node>();
+        root = new Node("Pgm");
+        inputStack.push(root);
 
         return new ParseTable();
     }
 
     /**
-     * Returns if the top of the stack is the equal to the front, or if we've reached the end of the stack.
-     * @param top       top of the symbol stack
-     * @param front     front of input stream
-     * @return      TRUE: when top is equal to the front, or when we've reached the bottom of the stack.
+     * Pops the node at the top of the stack and adds the value of the front of the input stream
+     * only if it is a id, int, string, etc.
      */
-    private static boolean m1(String top, String front) {
-        return top.equals(front) || top.equals("$");
+    private static void m1() {
+        Node poppedNode = inputStack.pop();
+        Token poppedToken = tokens.remove(0);
+
+        poppedNode.setValue(poppedToken.getValue());
     }
 
     /**
@@ -104,16 +109,56 @@ public class Parser {
             inputStack.pop();
         } else {
             // M4: pop stack + reversed RHS onto stack
-            inputStack.pop();
+            Node parent = inputStack.pop();
 
             String[] reversed = rule.getReversedRhsArray();
-            for (String keyword : reversed)
-                inputStack.push(keyword);
+            for (String keyword : reversed) {
+                Node child = new Node(keyword);
+                parent.addChild(child);
+                inputStack.push(child);
+            }
         }
     }
 
+    /**
+     * Simple error function.
+     * @param errorLoc String (usually m1-m4).
+     */
     private static void error(String errorLoc) {
         System.out.println(errorLoc + " ERROR.");
         System.exit(1);
+    }
+
+    /**
+     * Recursively prints the tree in a pre-order fashion, so that a nodes children are printed before the next sibling.
+     * @param root  Root (or root @ that level) of the Tree
+     * @param level The "level" or "depth" that the node is at
+     */
+    private static void printTree(Node root, int level) {
+        if (root == null)
+            return;
+
+        String tabbing = getSpacing(level);
+        System.out.println(tabbing + "(" + root + ")");
+
+        level++;
+        ArrayList<Node> children = root.getChildren();
+        for (Node child : children) {
+            printTree(child, level);
+        }
+    }
+
+    /**
+     * Helper of printTree.
+     * Returns "level" number of spaces in a String to be prefixed to a child node.
+     * @param level "level" or "depth" that the node is at
+     * @return String containing "level" number of spaces.
+     */
+    private static String getSpacing(int level) {
+        String str = "";
+        for (int i = 0; i < level; i++)
+            str = str + " ";
+
+        return str;
     }
 } // end Parser

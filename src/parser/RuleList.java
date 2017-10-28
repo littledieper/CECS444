@@ -2,13 +2,23 @@ package parser;
 
 public class RuleList {
 
+    /** list of rules from A6 Grammar */
     private Rule[] rules;
+    /** max number of rules allowed */
     private final int NUM_RULES = 52;
 
+    /**
+     * Default constructor that fills the list.
+     */
     public RuleList() {
         fillList();
     }
 
+    /**
+     * Returns the grammar rule and its RHS from the A6 Grammar
+     * @param ruleId    ruleId of rule to get
+     * @return Rule with matching ruleId
+     */
     public Rule get(int ruleId) {
         if (ruleId > NUM_RULES + 1 || ruleId < 1) {
             return null;
@@ -17,6 +27,9 @@ public class RuleList {
         return rules[ruleId - 1];
     }
 
+    /**
+     * Fills the 2D array with rules given by the A6 Grammar.
+     */
     private void fillList() {
         rules = new Rule[NUM_RULES];
 

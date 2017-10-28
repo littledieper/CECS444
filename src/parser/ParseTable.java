@@ -4,17 +4,30 @@ import java.util.HashMap;
 
 public class ParseTable {
 
+    /** Helper map of non-terminals -> index. These should represent the Y axis labels of the LLParse table.*/
     private HashMap<String, Integer> nMapper;
+    /** Helper map of terminals -> index. These should represent the X axis labels of the LLParse table.*/
     private HashMap<String, Integer> tMapper;
+    /** 2D array containing the actual LLParse table holding ID's to rules */
     private int[][] table;
+    /** List of rules so we can associate ruleId's with A6 GRM Rules */
     private RuleList rules;
 
+    /**
+     * Default constructor. Fills the table, associated helper maps, and the rule list.
+     */
     public ParseTable() {
         fillMappers();
         fillTable();
         rules = new RuleList();
     }
 
+    /**
+     * Gets the associated rule at [STACKTOP, FRONTINPUT] from the LL parse table.
+     * @param top   keyword from the top of the stack
+     * @param front token value from the front of input
+     * @return  Rule located at located @ [STACKTOP, FRONTINPUT]
+     */
     public Rule get(String top, String front) {
         int leftId = nMapper.get(top);
         int rightId = tMapper.get(front);
@@ -32,6 +45,12 @@ public class ParseTable {
         }
     }
 
+    /**
+     * Gets the associated ruleId of the rule that should be located at [STACKTOP, FRONTINPUT] of the LL parse table.
+     * @param leftId    id of the non-T symbol at the top of the stack
+     * @param rightId   id of the T symbol at the front of input
+     * @return  ruleId of rule located @ [STACKTOP, FRONTINPUT]
+     */
     private int lookup(int leftId, int rightId) {
         if (leftId > 29 || leftId < 0 || rightId > 30 || rightId < 0) {
             return -1;
@@ -40,6 +59,9 @@ public class ParseTable {
         return table[leftId][rightId];
     }
 
+    /**
+     * Fills the LLParse table.
+     */
     private void fillTable() {
         // [row][column]
         table = new int[29][30];
@@ -71,7 +93,7 @@ public class ParseTable {
         table[9][10] = 17;
         table[10][7] = 18;
         table[11][9] = 19;
-        table[12][20] = 20;
+        table[12][10] = 20;
         table[13][4] = 21;
         table[14][4] = 22;
         table[15][4] = 23;
@@ -131,7 +153,7 @@ public class ParseTable {
         table[22][27] = 32;
         table[22][28] = 32;
         table[23][4] = 39;
-        table[23][7] = 39;
+        table[23][7] = 38;
         table[23][12] = 35;
         table[23][13] = 36;
         table[23][14] = 37;

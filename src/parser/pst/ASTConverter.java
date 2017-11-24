@@ -1,7 +1,6 @@
 package parser.pst;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class ASTConverter {
 
@@ -17,6 +16,7 @@ public class ASTConverter {
                 Node fixedChild = convert(children.get(i));
                 // remove unnecessary rules that may exist after.
                 fixedChild.getChildren().removeIf(Node::isEpsilonRule);
+                fixedChild = fixQ(fixedChild);
                 children.set(i, fixedChild);
             }
         }
@@ -152,5 +152,21 @@ public class ASTConverter {
     // fixes: basekind, varid, stmt, default
     private static Node fix0(ArrayList<Node> children) {
         return children.remove(0);
+    }
+
+    private static Node fixQ(Node node) {
+        Node hoisted = node;
+
+        if (hoisted.getKeyword().equals("Q")) {
+            ArrayList<Node> children = hoisted.getChildren();
+
+            if (children.size() == 1 || children.size() == 2) {
+                hoisted = fix0(children);
+                hoisted.replaceChildren(children);
+            }
+        }
+
+        hoisted.setParent(node.getParent());
+        return hoisted;
     }
 }

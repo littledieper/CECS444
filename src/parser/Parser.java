@@ -24,7 +24,7 @@ public class Parser {
         while(!inputStack.empty()) {
             String stackTop = inputStack.peek().getKeyword();
             String inputFront = tokens.get(0).getGrammar().getKeyword();
-            System.out.println("TOP = " + stackTop + "   FRONT = " + inputFront);
+            //System.out.println("TOP = " + stackTop + "   FRONT = " + inputFront);
 
             if (stackTop.equals(inputFront) || stackTop.equals("$")) {
                 m1();
@@ -41,7 +41,12 @@ public class Parser {
             } // end if/elseif/else
         } // end while
 
+        // Print PST tree first.
+        System.out.println("PST:\n");
+        printTree(root, 0);
+
         // Convert PST to AST and print out the AST.
+        System.out.println("\n\nAST:\n");
         Node astRoot = ASTConverter.convert(root);
         printTree(astRoot, 0);
     } // end main
@@ -57,7 +62,7 @@ public class Parser {
         if (tokenizer.isReady())
             tokens = tokenizer.tokenize();
 
-        if (tokens.isEmpty())
+        if (tokens == null || tokens.isEmpty())
             return null;
 
         // SETUP : start the parser
@@ -157,7 +162,7 @@ public class Parser {
     private static String getSpacing(int level) {
         String str = "";
         for (int i = 0; i < level; i++)
-            str = str + " ";
+            str = str + "  ";
 
         return str;
     }

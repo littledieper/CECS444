@@ -1,0 +1,7 @@
+prog {
+    a = 1;
+    while (a <= 8) {
+        print("hello ", a);
+        a = a * 2;
+    };
+}

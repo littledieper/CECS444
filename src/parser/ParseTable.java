@@ -159,9 +159,9 @@ public class ParseTable {
         table[23][14] = 37;
         table[24][18] = 40;
         table[24][19] = 41;
-        table[24][20] = 42;
-        table[24][21] = 43;
-        table[24][22] = 44;
+        table[24][20] = 43;
+        table[24][21] = 44;
+        table[24][22] = 42;
         table[24][23] = 45;
         table[25][22] = 46;
         table[26][23] = 47;

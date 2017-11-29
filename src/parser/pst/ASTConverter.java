@@ -16,7 +16,7 @@ public class ASTConverter {
                 Node fixedChild = convert(children.get(i));
                 // remove unnecessary rules that may exist after.
                 fixedChild.getChildren().removeIf(Node::isEpsilonRule);
-                fixedChild = fixQ(fixedChild);
+                fixedChild = fixExtra(fixedChild);
                 children.set(i, fixedChild);
             }
         }
@@ -102,7 +102,7 @@ public class ASTConverter {
                         hoisted = fix4(children);
                         break;
                     case "Rterm":
-                        hoisted = fix1(children);
+                        hoisted = fix0(children);
                         break;
                     case "Q":
                         hoisted = fix4(children);
@@ -125,7 +125,6 @@ public class ASTConverter {
         }
         return hoisted;
     }
-
 
     // fixes: pgm, vargroup, vardecl, stmts, stasgn, stprint, exprlist, moreexprs, expr, rterm
     private static Node fix1(ArrayList<Node> children) {
@@ -154,15 +153,32 @@ public class ASTConverter {
         return children.remove(0);
     }
 
-    private static Node fixQ(Node node) {
+    private static Node fixExtra(Node node) {
         Node hoisted = node;
 
         if (hoisted.getKeyword().equals("Q")) {
             ArrayList<Node> children = hoisted.getChildren();
 
-            if (children.size() == 1 || children.size() == 2) {
+            if (children.size() >= 1) {
                 hoisted = fix0(children);
                 hoisted.replaceChildren(children);
+            }
+        }
+
+        if (hoisted.getKeyword().equals("R")) {
+            ArrayList<Node> children = hoisted.getChildren();
+
+            if (children.size() == 1) {
+                Node nodeToTest = children.get(0);
+
+                if (nodeToTest.getKeyword().equals("caret") ||
+                        nodeToTest.getKeyword().equals("aster") ||
+                        nodeToTest.getKeyword().equals("slash")) {
+                    hoisted = nodeToTest;
+                } else {
+                    hoisted = fix0(children);
+                    hoisted.replaceChildren(children);
+                }
             }
         }
 

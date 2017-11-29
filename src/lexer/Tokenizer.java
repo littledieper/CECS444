@@ -137,6 +137,8 @@ public class Tokenizer {
         } else if (tokenValue.equals("int") || tokenValue.equals("float") || tokenValue.equals("string")) {
             // these are keywords for int/float/string, so they should get the keyword grammar
             token.setGrammar(lexcon.get("k" + tokenValue));
+        } else if (tokenValue.length() == 1 && tokenValue.charAt(0) == '-') {
+            token.setGrammar(lexcon.get("-"));
         } else if (tokenValue.matches("[-.0-9]+")) {
             // found int/float digits
             if (tokenValue.contains(".")) // if it has a dot, it's a float

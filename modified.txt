@@ -1,0 +1,32 @@
+prog {
+    a = 7 + 8;
+    b = a;
+}
+
+prog {
+    print( "ASCII:", " A= ", 65, " Z= ", 90 );
+}
+
+prog {
+    a = 0;
+    while (a < 5) {
+        print("hello ", a);
+        a = a + 1;
+    };
+}
+
+prog { // Find the circumference of a circle.
+     pi = 3.14;
+     print( "Input radius> " );
+     rx = 32;
+     circum = 2 * pi * rx;
+     print( "Circumf= ", circum );
+}
+
+prog { // Find the hypotenuse of a right triangle.
+    print( "Input legs> " );
+    a = 3;
+    b = 4;
+    print( "Hypotenuse= ", ( a * a + b * b ) ^ 0.5 );
+}
+

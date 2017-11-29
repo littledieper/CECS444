@@ -15,6 +15,11 @@ public class Parser {
     private static Node root;
 
     public static void main(String args[]) {
+        Node astRoot = getASTRoot(true);
+        printTree(astRoot, 0);
+    }
+
+    public static Node getASTRoot(boolean printPST) {
         ParseTable table = init();
         if (table == null) {
             System.out.println("The tokenizer really failed...");
@@ -41,16 +46,11 @@ public class Parser {
             } // end if/elseif/else
         } // end while
 
-        // Print PST tree first.
-        System.out.println("PST:\n");
-        printTree(root, 0);
+        if (printPST)
+            printTree(root, 0);
 
-        // Convert PST to AST and print out the AST.
-        System.out.println("\n\nAST:\n");
-        Node astRoot = ASTConverter.convert(root);
-        printTree(astRoot, 0);
+        return ASTConverter.convert(root);
     } // end main
-
 
     /**
      * Initializes the LL Parse table to read from.
@@ -139,7 +139,7 @@ public class Parser {
      * @param root  Root (or root @ that level) of the Tree
      * @param level The "level" or "depth" that the node is at
      */
-    private static void printTree(Node root, int level) {
+    public static void printTree(Node root, int level) {
         if (root == null)
             return;
 

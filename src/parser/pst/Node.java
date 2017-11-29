@@ -1,18 +1,22 @@
 package parser.pst;
 
+import runner.sct.SCTNode;
+
 import java.util.ArrayList;
 
 public class Node {
-
+    /** Linked SCTNode */
+    private SCTNode sctNode;
     /** parent of this node */
     private Node parent;
     /** children of this node */
     private ArrayList<Node> children;
-
     /** keyword of the rule this node represents */
     private String keyword;
     /** value of the rule this node represents */
     private String value;
+    /** hash of object */
+    private int hashId;
 
     /**
      * Constructor
@@ -35,6 +39,15 @@ public class Node {
         this.keyword = keyword;
         this.value = value;
         children = new ArrayList<Node>();
+        this.hashId = System.identityHashCode(this);
+    }
+
+    public SCTNode getSctNode() {
+        return sctNode;
+    }
+
+    public void setSctNode(SCTNode sctNode) {
+        this.sctNode = sctNode;
     }
 
     /**
@@ -43,6 +56,14 @@ public class Node {
      */
     public String getKeyword() {
         return keyword;
+    }
+
+    /**
+     * Returns the value of the Node
+     * @return  value of the Node
+     */
+    public String getValue() {
+        return value;
     }
 
     /**
@@ -140,7 +161,7 @@ public class Node {
     @Override
     public String toString() {
         String str = "Node: " +
-                "id='" + System.identityHashCode(this) + '\'' +
+                "id='" + hashId + '\'' +
                 ", keyword='" + keyword + '\'';
 
         if (isValueOkayToPrint()) {
@@ -150,4 +171,5 @@ public class Node {
         str = str + "}";
         return str;
     }
+
 }
